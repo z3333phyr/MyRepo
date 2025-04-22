@@ -15,7 +15,8 @@ const port = 3000;
 
 db.connect();
 
-db.query("SELECT * FROM capitals" , (err, res) => {
+let quiz = [];
+db.query("SELECT * FROM flags" , (err, res) => {
   if (err){
     console.error("Error executing query", err.stack);
   } else {
@@ -24,7 +25,6 @@ db.query("SELECT * FROM capitals" , (err, res) => {
 
   db.end();
 });
-
 
 
 let totalCorrect = 0;
