@@ -17,9 +17,6 @@ app.use(
     secret: "TOPSECRETWORD",
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      maxAge : 1000 * 60 * 60 * 24,
-    }
   })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,7 +29,7 @@ const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "secrets",
-  password: "thisismypassword",
+  password: "123456",
   port: 5432,
 });
 db.connect();
@@ -97,10 +94,9 @@ app.post("/register", async (req, res) => {
           );
           const user = result.rows[0];
           req.login(user, (err) => {
-            console.log(err);
+            console.log("success");
             res.redirect("/secrets");
-          }
-          );
+          });
         }
       });
     }
