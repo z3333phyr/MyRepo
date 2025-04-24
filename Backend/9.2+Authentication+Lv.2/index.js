@@ -43,13 +43,18 @@ app.post("/register", async (req, res) => {
     if (checkResult.rows.length > 0) {
       res.send("Email already exists. Try logging in.");
     } else {
-      bcrypt.hash(password,saltRounds, async (err,hash) => {
-        const result = await db.query(
-          "INSERT INTO users (email, password) VALUES ($1, $2)",
-          [email, hash]
-        );
-        console.log(result);
-        res.render("secrets.ejs");
+      bcrypt.hash(password, saltRounds, async (err,hash) => {
+        if(err){
+          console.error("Error hashing password:", err);
+        } else {
+          console.log("Hashed password:", hash);
+          await db.query(
+            "INSERT INTO users (email, password) VALUES ($1, $2)",
+            [email, hash]           
+          );
+          res.render("secrets.ejs");
+        }
+        
       });     
     }
   } catch (err) {
@@ -69,18 +74,17 @@ app.post("/login", async (req, res) => {
       const user = result.rows[0];
       const storedHashedPassword = user.password;
 
-      bcrypt.compare(loginPassword, storedHashedPassword), (err, result) => {
+      bcrypt.compare(loginPassword, storedHashedPassword, (err, result) => {
         if (err){
-          console.log("Error comparing passwords", err);
+          console.error("Error comparing passwords", err);
         } else {
           if (result) {
-            res.redirect("secrets.ejs");
+            res.render("secrets.ejs");
           }else{
             res.send("Incorrect Password.");
-          }
-          
+          } 
         }
-      }
+      });
     } else {
       res.send("User not found");
     }
